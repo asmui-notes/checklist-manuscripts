@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PhD Works — April / May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#F7F5F0;color:#1A1714;min-height:100vh;padding-bottom:3rem}
+
+.masthead{background:#1A1714;color:#F7F5F0;padding:2rem 1.5rem 1.75rem;position:relative;overflow:hidden}
+.masthead::after{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,0.07);pointer-events:none}
+.masthead-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,245,240,.4);margin-bottom:10px}
+.masthead h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(18px,4.5vw,28px);font-weight:400;line-height:1.25;margin-bottom:6px}
+.masthead-sub{font-size:12px;color:rgba(247,245,240,.4);font-weight:300}
+
+.prog-wrap{background:#fff;border-bottom:1px solid #E2DDD6;padding:1.1rem 1.5rem}
+.prog-bars{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:10px}
+.prog-bar-block{display:flex;flex-direction:column;gap:5px}
+.prog-bar-top{display:flex;align-items:center;justify-content:space-between}
+.prog-bar-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.lbl-ms{color:#2459A8}
+.lbl-def{color:#3C3489}
+.prog-pct{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;min-width:30px;text-align:right}
+.pct-ms{color:#2459A8}
+.pct-def{color:#3C3489}
+.prog-track{height:7px;background:#EDE9E3;border-radius:4px;overflow:hidden;margin:4px 0}
+.prog-fill{height:100%;border-radius:4px;width:0%;transition:width .5s ease}
+.fill-ms{background:#2459A8}
+.fill-def{background:#534AB7}
+.prog-bar-count{font-size:11px;color:#7A7369}
+.prog-divider{height:1px;background:#EDE9E3;margin-bottom:8px}
+.prog-meta{display:flex;justify-content:space-between;align-items:center}
+.prog-total{font-size:12px;color:#7A7369}
+.sync-row{display:flex;align-items:center;gap:5px;font-size:11px;color:#7A7369;font-family:'DM Mono',monospace}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#ccc;transition:background .3s;flex-shrink:0}
+.sync-dot.ok{background:#4FA87A}
+.sync-dot.saving{background:#E8A000}
+.sync-dot.error{background:#C0392B}
+@media(max-width:480px){.prog-bars{grid-template-columns:1fr}}
+
+.main{max-width:700px;margin:0 auto;padding:1.25rem 1.5rem}
+
+.done-banner{display:none;background:#1D6B4A;color:#fff;border-radius:10px;padding:13px 16px;text-align:center;font-size:13px;margin-bottom:1rem}
+.done-banner.show{display:block}
+
+.day{background:#fff;border:1px solid #E2DDD6;border-radius:12px;margin-bottom:10px;overflow:hidden}
+.day-hdr{display:flex;align-items:center;gap:9px;padding:11px 15px;cursor:pointer;user-select:none;transition:background .15s}
+.day-hdr:hover{background:#F7F5F0}
+.day-pill{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.04em}
+.p-today{background:#E0F0E8;color:#1D6B4A}
+.p-fri{background:#E6EEF8;color:#2459A8}
+.p-sat,.p-sun{background:#FBEEEA;color:#A83C1D}
+.p-mon{background:#FDF3E3;color:#9A6200}
+.p-ch5{background:#EEEDFE;color:#3C3489}
+.p-slide{background:#FAEEDA;color:#633806}
+.p-sv{background:#FBEAF0;color:#72243E}
+.p-def{background:#FCEBEB;color:#791F1F}
+.sec-group-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#9A6200;background:#FDF3E3;padding:7px 15px 6px;border-top:1px solid #E2DDD6;border-bottom:1px solid #E2DDD6;margin-bottom:2px}
+.day-title{font-size:13px;font-weight:500;flex:1;color:#1A1714}
+.mini-bar{width:38px;height:3px;background:#EDE9E3;border-radius:2px;overflow:hidden}
+.mini-fill{height:100%;background:#4FA87A;border-radius:2px;transition:width .4s}
+.day-cnt{font-family:'DM Mono',monospace;font-size:11px;color:#7A7369;white-space:nowrap}
+.chevron{font-size:10px;color:#7A7369;transition:transform .22s;margin-left:2px}
+
+.day-body{padding:4px 15px 11px;display:flex;flex-direction:column;gap:2px}
+.sec-divider{height:1px;background:#EDE9E3;margin:8px 0 3px}
+.sec-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#7A7369;padding:6px 7px 3px}
+
+.task{display:flex;align-items:flex-start;gap:9px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .12s}
+.task:hover{background:#F7F5F0}
+.task.done .task-txt{text-decoration:line-through;color:#7A7369}
+.task-box{width:16px;height:16px;border:1.5px solid #D0CCC6;border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .18s;background:#fff}
+.task.done .task-box{background:#1D6B4A;border-color:#1D6B4A}
+.tick{display:none;color:#fff;font-size:9px;font-weight:700;line-height:1}
+.task.done .tick{display:block}
+.task-txt{font-size:13px;color:#1A1714;line-height:1.55;flex:1;font-weight:300}
+.tag{font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:3px}
+.tag-write{background:#E0F0E8;color:#1D6B4A}
+.tag-compile{background:#E6EEF8;color:#2459A8}
+.tag-review{background:#FDF3E3;color:#9A6200}
+.tag-format{background:#F8EAF2;color:#8C2A5E}
+
+.day.closed .day-body{display:none}
+.day.closed .chevron{transform:rotate(-90deg)}
+
+.footnote{font-size:12px;color:#7A7369;background:#fff;border:1px solid #E2DDD6;border-radius:10px;padding:12px 15px;line-height:1.7;margin-top:1rem;font-weight:300}
+.footnote b{font-weight:500;color:#1A1714}
+
+@media(max-width:480px){
+  .masthead,.prog-wrap,.main{padding-left:1rem;padding-right:1rem}
+  .tag{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-eyebrow">PhD Progress Tracker · UiTM Malaysia</div>
+  <h1>All PhD Works<br/>April – May 2026</h1>
+  <div class="masthead-sub">Manuscript · Chapter 5 · Candidature Defence · 5 May 2026</div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-bars">
+    <div class="prog-bar-block">
+      <div class="prog-bar-top">
+        <span class="prog-bar-label lbl-ms">Manuscript</span>
+        <span class="prog-pct pct-ms" id="pct-ms">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill fill-ms" id="pbar-ms"></div></div>
+      <div class="prog-bar-count"><span id="ms-done">0</span> of <span id="ms-total">0</span> tasks · due 22 Apr</div>
+    </div>
+    <div class="prog-bar-block">
+      <div class="prog-bar-top">
+        <span class="prog-bar-label lbl-def">Candidature Defence</span>
+        <span class="prog-pct pct-def" id="pct-def">0%</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill fill-def" id="pbar-def"></div></div>
+      <div class="prog-bar-count"><span id="def-done">0</span> of <span id="def-total">0</span> tasks · defence 5 May</div>
+    </div>
+  </div>
+  <div class="prog-divider"></div>
+  <div class="prog-meta">
+    <div class="prog-total">Total: <span id="n-done">0</span> of <span id="n-total">0</span> tasks completed</div>
+    <div class="sync-row"><div class="sync-dot" id="sdot"></div><span id="slabel">local</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="done-banner" id="done-banner">All tasks complete — you are ready to defend!</div>
+  <div id="days"></div>
+  <div class="footnote"><b>Ticks are saved locally</b> and synced to Firestore when online. All PhD works for April–May 2026 in one place. Collapse sections you are not working on.</div>
+</div>
+
+<script>
+var DAYS=[
+  {id:"thu",pill:"p-today",label:"TODAY",title:"Thursday 17 Apr — Gather & Outline",open:true,
+   sections:[{name:"prepare",tasks:[
+    {t:"Locate all Chapter 4 outputs: simulation tables, plots, R scripts",g:"compile"},
+    {t:"Open a fresh LaTeX or Word manuscript file with journal template",g:"format"},
+    {t:"Write out all section headings and sub-headings as a skeleton",g:"write"},
+    {t:"List the key results you must report (3–5 main findings)",g:"compile"}
+   ]}]},
+  {id:"fri",pill:"p-fri",label:"FRI",title:"Friday 18 Apr — Introduction & References",open:false,
+   sections:[
+    {name:"introduction",tasks:[
+     {t:"Write motivation: why circular time series + long memory matters",g:"write"},
+     {t:"State the research gap clearly (1 paragraph)",g:"write"},
+     {t:"List your paper's 3–4 main contributions",g:"write"},
+     {t:"Write a brief paragraph on paper structure",g:"write"}
+    ]},
+    {name:"references",tasks:[
+     {t:"Compile a draft reference list from Chapter 4 bibliography",g:"compile"},
+     {t:"Add key refs: Di Marzio et al. 2012, Beran & Ghosh 2020",g:"compile"}
+    ]}
+   ]},
+  {id:"sat",pill:"p-sat",label:"SAT",title:"Saturday 19 Apr — Methodology (heavy day)",open:false,
+   sections:[
+    {name:"morning · CPRC method",tasks:[
+     {t:"Define the CPRC test statistic formally with notation",g:"write"},
+     {t:"State assumptions and regularity conditions",g:"write"},
+     {t:"Write asymptotic null distribution result with proof sketch",g:"write"}
+    ]},
+    {name:"afternoon · GH-LM method",tasks:[
+     {t:"Introduce the Grabovsky-Horvath framework adapted for LRD",g:"write"},
+     {t:"Define the long memory correction factor (role of d-hat)",g:"write"},
+     {t:"Write detection procedure step-by-step as an algorithm box",g:"write"},
+     {t:"Add short subsection comparing CPRC vs GH-LM conceptually",g:"write"}
+    ]},
+    {name:"evening · review",tasks:[
+     {t:"Read methodology section aloud — flag gaps or missing notation",g:"review"},
+     {t:"Check all equations are numbered and notation is consistent",g:"review"}
+    ]}
+   ]},
+  {id:"sun",pill:"p-sun",label:"SUN",title:"Sunday 20 Apr — Simulation & Data Application",open:false,
+   sections:[
+    {name:"morning · simulation study",tasks:[
+     {t:"Write simulation design: DGP, parameter grid (n=500, d in 0.1,0.3, tau=250)",g:"write"},
+     {t:"Report size and power tables from 200-replication Monte Carlo",g:"compile"},
+     {t:"Insert plots: power curves across scenarios, method comparison",g:"compile"},
+     {t:"Write 2-3 paragraph interpretation of simulation findings",g:"write"}
+    ]},
+    {name:"afternoon · real data",tasks:[
+     {t:"Write data description: stations (Alor Setar, Kota Bharu, Mersing, etc.)",g:"write"},
+     {t:"Report long memory estimates (GPH, Local Whittle) per series",g:"compile"},
+     {t:"Apply CPRC and GH-LM to wind data, report detected changepoints",g:"compile"},
+     {t:"Interpret detected changepoints in meteorological context",g:"write"}
+    ]},
+    {name:"evening · conclusion & abstract",tasks:[
+     {t:"Write Discussion & Conclusion (~400 words): findings, limits, future work",g:"write"},
+     {t:"Draft Abstract (~200 words) — write this last",g:"write"}
+    ]}
+   ]},
+  {id:"mon",pill:"p-mon",label:"MON-TUE",title:"Mon 21 – Tue 22 Apr — Polish & Submit",open:false,
+   sections:[{name:"polish",tasks:[
+    {t:"Full read-through: fix flow and transitions between sections",g:"review"},
+    {t:"Check journal formatting: title page, keywords, word count limit",g:"format"},
+    {t:"Verify all figures have captions and tables have titles",g:"format"},
+    {t:"Run spell-check, fix phrasing and academic tone",g:"review"},
+    {t:"Send draft to supervisor with a short cover note",g:"format"}
+   ]}]},
+
+  {id:"ch5a",pill:"p-ch5",label:"CH5 · WED",title:"Wed 23 Apr — Chapter 5 Start",open:false,group:"chapter5",
+   sections:[{name:"§5.1–5.2 intro & related work",tasks:[
+    {t:"Write §5.1 introduction: motivation for changepoint detection in circular LM series",g:"write"},
+    {t:"Write §5.2 brief review: PELT/CROPS and existing circular changepoint methods",g:"write"},
+    {t:"Connect changepoint context to long memory framework from Chapter 3",g:"write"}
+   ]}]},
+  {id:"ch5b",pill:"p-ch5",label:"CH5 · THU",title:"Thu 24 Apr — §5.3 Proposed Methods",open:false,group:"chapter5",
+   sections:[{name:"§5.3 CPRC + GH-LM",tasks:[
+    {t:"Define CPRC (Circular Persistence Ratio CUSUM) test statistic formally",g:"write"},
+    {t:"Write assumptions and regularity conditions for CPRC",g:"write"},
+    {t:"Introduce GH-LM (Grabovsky-Horvath with LRD correction)",g:"write"},
+    {t:"Define long memory correction factor — clarify role of d-hat",g:"write"},
+    {t:"Write step-by-step detection algorithm box for both methods",g:"write"}
+   ]}]},
+  {id:"ch5c",pill:"p-ch5",label:"CH5 · FRI",title:"Fri 25 Apr — §5.4 Asymptotic Theory",open:false,group:"chapter5",
+   sections:[{name:"§5.4 theory",tasks:[
+    {t:"Write asymptotic null distributions for CPRC and GH-LM",g:"write"},
+    {t:"Sketch consistency proofs — reference Beran & Ghosh (2020) LRD transfer",g:"write"},
+    {t:"Write short subsection comparing CPRC vs GH-LM conceptually",g:"write"},
+    {t:"Check all theorem/proposition numbering is consistent with Chapter 3",g:"review"}
+   ]}]},
+  {id:"ch5d",pill:"p-ch5",label:"CH5 · SAT",title:"Sat 26 Apr — §5.5 Simulation Study",open:false,group:"chapter5",
+   sections:[{name:"§5.5 monte carlo",tasks:[
+    {t:"Write simulation design: DGP, parameter grid (n=500, d in 0.1/0.3, tau=250, 200 reps)",g:"write"},
+    {t:"Compile size and power tables for CPRC and GH-LM",g:"compile"},
+    {t:"Insert power curve plots across all scenarios",g:"compile"},
+    {t:"Write interpretation: compare CPRC vs GH-LM performance across d values",g:"write"}
+   ]}]},
+  {id:"ch5e",pill:"p-ch5",label:"CH5 · SUN",title:"Sun 27 Apr — §5.6 Real Data + Summary",open:false,group:"chapter5",
+   sections:[
+    {name:"§5.6 real data application",tasks:[
+     {t:"Apply CPRC and GH-LM to wind direction: Alor Setar, Kota Bharu, Mersing, KK, Sibu",g:"compile"},
+     {t:"Report GPH and Local Whittle long memory estimates per station",g:"compile"},
+     {t:"Report detected changepoints and their dates for each station",g:"compile"},
+     {t:"Write meteorological interpretation of changepoints",g:"write"}
+    ]},
+    {name:"§5.7 summary",tasks:[
+     {t:"Write chapter summary: key findings, connection to Chapter 4",g:"write"},
+     {t:"State limitations and open questions for future work",g:"write"}
+    ]}
+   ]},
+  {id:"ch5f",pill:"p-ch5",label:"CH5 · MON",title:"Mon 28 Apr — Chapter 5 Review & Send",open:false,group:"chapter5",
+   sections:[{name:"review & submit",tasks:[
+    {t:"Full read-through of Chapter 5 — fix notation, flow, cross-references",g:"review"},
+    {t:"Check all figures/tables are labelled and numbered correctly",g:"format"},
+    {t:"Send Chapter 5 draft to supervisor",g:"format"}
+   ]}]},
+
+  {id:"sl1",pill:"p-slide",label:"SLIDES · TUE",title:"Tue 29 Apr — Build Slides (Part 1)",open:false,group:"slides",
+   sections:[{name:"first half of deck",tasks:[
+    {t:"Title slide, research background, motivation (3 slides)",g:"write"},
+    {t:"Research objectives, questions, and scope (2 slides)",g:"write"},
+    {t:"Literature review highlights: circular TS, long memory, changepoint (3 slides)",g:"write"},
+    {t:"Chapter 3: Methodology — nonparametric circular kernel regression (4 slides)",g:"compile"}
+   ]}]},
+  {id:"sl2",pill:"p-slide",label:"SLIDES · WED",title:"Wed 30 Apr — Build Slides (Part 2) + Send",open:false,group:"slides",
+   sections:[{name:"second half + send",tasks:[
+    {t:"Chapter 4: Results & Findings — simulation + wind data application (4 slides)",g:"compile"},
+    {t:"Chapter 5: CPRC & GH-LM methods overview (2 slides)",g:"write"},
+    {t:"Chapter 5: Simulation results + real data changepoints (2 slides)",g:"compile"},
+    {t:"Research contributions & novelty (2 slides)",g:"write"},
+    {t:"Future work & PhD completion timeline (2 slides)",g:"write"},
+    {t:"Send complete slide deck to supervisor by end of day",g:"format"}
+   ]}]},
+  {id:"sv",pill:"p-sv",label:"SV · THU",title:"Thu 1 May — Supervisor Meeting (slides discussion)",open:false,group:"slides",
+   sections:[{name:"supervisor review",tasks:[
+    {t:"Email supervisor NOW to schedule this meeting (do not wait!)",g:"format"},
+    {t:"Prepare 3 specific questions to ask supervisor about the slides",g:"review"},
+    {t:"Attend meeting — note all feedback items clearly",g:"review"},
+    {t:"List all required slide revisions after the meeting",g:"review"}
+   ]}]},
+  {id:"sl3",pill:"p-slide",label:"SLIDES · FRI",title:"Fri 2 May — Revise Slides",open:false,group:"slides",
+   sections:[{name:"revisions",tasks:[
+    {t:"Action all supervisor feedback on slides",g:"review"},
+    {t:"Tighten slide flow — each slide should make one clear point",g:"review"},
+    {t:"Rehearse full presentation once — check timing (target 20-25 min)",g:"review"},
+    {t:"Finalise slide deck",g:"format"}
+   ]}]},
+
+  {id:"def1",pill:"p-def",label:"DEF · SAT",title:"Sat 3 May — Full Rehearsal",open:false,group:"defence",
+   sections:[{name:"rehearsal",tasks:[
+    {t:"Full timed run-through — record yourself if possible",g:"review"},
+    {t:"Prepare answers for likely committee questions (methodology, limitations, future work)",g:"review"},
+    {t:"Review key equations and proofs you may be asked to explain at the board",g:"review"}
+   ]}]},
+  {id:"def2",pill:"p-def",label:"DEF · SUN",title:"Sun 4 May — Rest & Prepare",open:false,group:"defence",
+   sections:[{name:"final prep",tasks:[
+    {t:"Light review of slide deck — no new changes",g:"review"},
+    {t:"Prepare printed copy of thesis chapters (Ch3, Ch4, Ch5) for reference",g:"format"},
+    {t:"Rest — avoid last-minute cramming",g:"review"}
+   ]}]},
+  {id:"def3",pill:"p-def",label:"5 MAY",title:"Mon 5 May — Candidature Defence",open:false,group:"defence",
+   sections:[{name:"defence day",tasks:[
+    {t:"Arrive early — set up slides and test projector/screen",g:"format"},
+    {t:"Present — clear, confident, 20-25 minutes",g:"review"},
+    {t:"Answer committee questions calmly — it is okay to say 'I will investigate further'",g:"review"}
+   ]}]}
+];
+
+// --- state ---
+var open={};
+var state={};
+DAYS.forEach(function(d){open[d.id]=d.open});
+
+function key(did,sn,i){return did+'__'+sn.replace(/\W+/g,'_')+'__'+i}
+function allKeys(){
+  var k=[];
+  DAYS.forEach(function(d){d.sections.forEach(function(s){s.tasks.forEach(function(_,i){k.push(key(d.id,s.name,i))})})});
+  return k;
+}
+
+// load from localStorage
+try{var saved=localStorage.getItem('ms_checklist');if(saved)state=JSON.parse(saved)}catch(e){}
+
+function save(){try{localStorage.setItem('ms_checklist',JSON.stringify(state))}catch(e){}}
+
+function setSync(cls,msg){
+  document.getElementById('sdot').className='sync-dot '+cls;
+  document.getElementById('slabel').textContent=msg;
+}
+
+function render(){
+  var all=allKeys(),total=all.length,done=all.filter(function(k){return state[k]}).length;
+
+  var msIds=DAYS.filter(function(d){return !d.group});
+  var defIds=DAYS.filter(function(d){return !!d.group});
+
+  function countKeys(days){
+    var ks=[];
+    days.forEach(function(d){d.sections.forEach(function(s){s.tasks.forEach(function(_,i){ks.push(key(d.id,s.name,i))})})});
+    return ks;
+  }
+
+  var msKeys=countKeys(msIds),msTotal=msKeys.length,msDone=msKeys.filter(function(k){return state[k]}).length;
+  var defKeys=countKeys(defIds),defTotal=defKeys.length,defDone=defKeys.filter(function(k){return state[k]}).length;
+  var msPct=msTotal?Math.round(msDone/msTotal*100):0;
+  var defPct=defTotal?Math.round(defDone/defTotal*100):0;
+
+  document.getElementById('pbar-ms').style.width=msPct+'%';
+  document.getElementById('pct-ms').textContent=msPct+'%';
+  document.getElementById('ms-done').textContent=msDone;
+  document.getElementById('ms-total').textContent=msTotal;
+  document.getElementById('pbar-def').style.width=defPct+'%';
+  document.getElementById('pct-def').textContent=defPct+'%';
+  document.getElementById('def-done').textContent=defDone;
+  document.getElementById('def-total').textContent=defTotal;
+  document.getElementById('n-done').textContent=done;
+  document.getElementById('n-total').textContent=total;
+  document.getElementById('done-banner').className='done-banner'+(done===total&&total>0?' show':'');
+
+  var wrap=document.getElementById('days');
+  wrap.innerHTML='';
+
+  DAYS.forEach(function(day){
+    var dkeys=[];
+    day.sections.forEach(function(s){s.tasks.forEach(function(_,i){dkeys.push(key(day.id,s.name,i))})});
+    var dd=dkeys.filter(function(k){return state[k]}).length;
+    var dt=dkeys.length;
+    var dpct=dt?Math.round(dd/dt*100):0;
+
+    var el=document.createElement('div');
+    el.className='day'+(open[day.id]?'':' closed');
+
+    var prevGroup=DAYS[DAYS.indexOf(day)-1]?DAYS[DAYS.indexOf(day)-1].group:null;
+    var groupLabel='';
+    if(day.group&&day.group!==prevGroup){
+      var gNames={chapter5:'Chapter 5 — Changepoint Analysis (Apr 23–28)',slides:'Candidature Defence Slides (Apr 29 – May 2)',defence:'Defence Preparation (May 3–5)'};
+      if(gNames[day.group])groupLabel='<div class="sec-group-label">'+gNames[day.group]+'</div>';
+    }
+
+    var body='';
+    day.sections.forEach(function(sec,si){
+      if(si>0)body+='<div class="sec-divider"></div>';
+      body+='<div class="sec-label">'+sec.name+'</div>';
+      sec.tasks.forEach(function(task,ti){
+        var k=key(day.id,sec.name,ti);
+        var done=!!state[k];
+        body+='<div class="task'+(done?' done':'')+'" data-k="'+k+'">'
+          +'<div class="task-box"><span class="tick">&#10003;</span></div>'
+          +'<div class="task-txt">'+task.t+'</div>'
+          +'<span class="tag tag-'+task.g+'">'+task.g+'</span>'
+          +'</div>';
+      });
+    });
+
+    el.innerHTML=
+      '<div class="day-hdr">'
+      +'<span class="day-pill '+day.pill+'">'+day.label+'</span>'
+      +'<span class="day-title">'+day.title+'</span>'
+      +'<div class="mini-bar"><div class="mini-fill" style="width:'+dpct+'%"></div></div>'
+      +'<span class="day-cnt">'+dd+'/'+dt+'</span>'
+      +'<span class="chevron">&#9662;</span>'
+      +'</div>'
+      +'<div class="day-body">'+body+'</div>';
+
+    el.querySelector('.day-hdr').addEventListener('click',function(){
+      open[day.id]=!open[day.id];render();
+    });
+    el.querySelectorAll('.task').forEach(function(row){
+      row.addEventListener('click',function(e){
+        e.stopPropagation();
+        var k=row.dataset.k;
+        state[k]=!state[k];
+        save();
+        render();
+        syncToFirebase(k,state[k]);
+      });
+    });
+
+    wrap.appendChild(el);
+    if(groupLabel){var gl=document.createElement('div');gl.innerHTML=groupLabel;wrap.insertBefore(gl.firstChild,el)}
+  });
+}
+
+// --- Firebase sync (optional, loads async) ---
+var fbDoc=null;
+var fbLoaded=false;
+
+function syncToFirebase(k,val){
+  if(!fbDoc)return;
+  setSync('saving','saving...');
+  var u={};u[k]=val;
+  fbDoc.set(u,{merge:true})
+    .then(function(){setSync('ok','synced')})
+    .catch(function(){setSync('error','sync error')});
+}
+
+function loadFirebase(){
+  var s1=document.createElement('script');
+  s1.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+  s1.onload=function(){
+    var s2=document.createElement('script');
+    s2.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+    s2.onload=function(){
+      try{
+        firebase.initializeApp({
+          apiKey:"AIzaSyDRW8NeNgXMg1ljdryVQsxzzzI7AEgJdBc",
+          authDomain:"manuscript-checklist.firebaseapp.com",
+          projectId:"manuscript-checklist",
+          storageBucket:"manuscript-checklist.firebasestorage.app",
+          messagingSenderId:"1039184365492",
+          appId:"1:1039184365492:web:3b13905399a722272794e1"
+        });
+        var db=firebase.firestore();
+        fbDoc=db.collection('checklist').doc('main');
+        setSync('','connecting...');
+        fbDoc.get().then(function(snap){
+          if(snap.exists){
+            var remote=snap.data();
+            Object.assign(state,remote);
+            save();
+            render();
+          }
+          setSync('ok','synced');
+          fbDoc.onSnapshot(function(snap){
+            if(snap.exists){Object.assign(state,snap.data());save();render();setSync('ok','synced')}
+          },function(){setSync('error','sync error')});
+        }).catch(function(e){setSync('error','offline');console.warn(e)});
+      }catch(e){setSync('error','firebase error');console.warn(e)}
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+}
+
+// render immediately from localStorage, then connect Firebase
+render();
+setSync('','local only');
+loadFirebase();
+</script>
+</body>
+</html>
