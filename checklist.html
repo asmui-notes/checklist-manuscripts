@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manuscript Checklist — Asmui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --border: #E2DDD6;
+    --text: #1A1714;
+    --muted: #7A7369;
+    --faint: #EDE9E3;
+    --green: #1D6B4A;
+    --green-light: #E0F0E8;
+    --green-mid: #4FA87A;
+    --blue-light: #E6EEF8;
+    --blue: #2459A8;
+    --amber-light: #FDF3E3;
+    --amber: #9A6200;
+    --coral-light: #FBEEEA;
+    --coral: #A83C1D;
+    --pink-light: #F8EAF2;
+    --pink: #8C2A5E;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  /* Header */
+  .masthead {
+    background: var(--text);
+    color: #F7F5F0;
+    padding: 2.5rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 1px solid rgba(247,245,240,0.08);
+  }
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(247,245,240,0.06);
+  }
+  .masthead-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(247,245,240,0.45);
+    margin-bottom: 8px;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .masthead-sub {
+    font-size: 13px;
+    color: rgba(247,245,240,0.5);
+    font-weight: 300;
+    position: relative;
+  }
+
+  /* Progress section */
+  .progress-section {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+  }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--faint);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+  .progress-pct {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green);
+    min-width: 38px;
+    text-align: right;
+  }
+  .progress-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .progress-count {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .sync-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .sync-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #CCC;
+    transition: background 0.3s;
+  }
+  .sync-dot.ok { background: var(--green-mid); }
+  .sync-dot.saving { background: #F0A500; }
+  .sync-dot.error { background: #C0392B; }
+
+  /* Main content */
+  .main { padding: 1.5rem 2rem; max-width: 720px; margin: 0 auto; }
+
+  /* Day blocks */
+  .day-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .day-block:hover { box-shadow: 0 2px 12px rgba(26,23,20,0.06); }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .day-header:hover { background: var(--faint); }
+
+  .day-pill {
+    font-size: 10px;
+    font-family: var(--mono);
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .pill-today  { background: var(--green-light); color: var(--green); }
+  .pill-prep   { background: var(--blue-light); color: var(--blue); }
+  .pill-main   { background: var(--coral-light); color: var(--coral); }
+  .pill-wrap   { background: var(--amber-light); color: var(--amber); }
+
+  .day-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+  .day-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .day-mini-bar {
+    width: 48px; height: 3px;
+    background: var(--faint);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .day-mini-fill {
+    height: 100%;
+    background: var(--green-mid);
+    border-radius: 2px;
+    transition: width 0.4s;
+  }
+  .chevron {
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.25s;
+    margin-left: 2px;
+  }
+
+  .day-body { padding: 4px 16px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .day-divider { height: 1px; background: var(--border); margin: 8px 0 2px; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 6px 4px;
+  }
+
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .task-row:hover { background: var(--faint); }
+  .task-row.done .task-text { text-decoration: line-through; color: var(--muted); }
+
+  .task-checkbox {
+    width: 17px; height: 17px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+  .task-row.done .task-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .tick { display: none; color: #fff; font-size: 10px; font-weight: 700; }
+  .task-row.done .tick { display: block; }
+
+  .task-text { font-size: 13px; color: var(--text); line-height: 1.55; flex: 1; font-weight: 300; }
+
+  .task-tag {
+    font-size: 9px;
+    font-family: var(--mono);
+    padding: 2px 6px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 3px;
+    letter-spacing: 0.03em;
+  }
+  .tag-write   { background: var(--green-light); color: var(--green); }
+  .tag-compile { background: var(--blue-light); color: var(--blue); }
+  .tag-review  { background: var(--amber-light); color: var(--amber); }
+  .tag-format  { background: var(--pink-light); color: var(--pink); }
+
+  /* Collapsed state */
+  .day-block.collapsed .day-body { display: none; }
+  .day-block.collapsed .chevron { transform: rotate(-90deg); }
+
+  /* Completion banner */
+  .complete-banner {
+    display: none;
+    background: var(--green);
+    color: #fff;
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  .complete-banner.show { display: block; }
+
+  /* Footer note */
+  .footnote {
+    margin-top: 1.5rem;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .footnote strong { font-weight: 500; color: var(--text); }
+
+  @media (max-width: 480px) {
+    .masthead { padding: 2rem 1.25rem 1.75rem; }
+    .progress-section, .main { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .task-tag { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-label">PhD Manuscript · UiTM Malaysia</div>
+  <h1>Nonparametric Circular Time Series<br/>with Long Memory</h1>
+  <div class="masthead-sub">Target journal: JSCS · Communications in Statistics · Deadline: 22 Apr 2025</div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-row">
+    <div class="progress-track">
+      <div class="progress-fill" id="pbar"></div>
+    </div>
+    <div class="progress-pct" id="pct">0%</div>
+  </div>
+  <div class="progress-meta">
+    <div class="progress-count"><span id="done-count">0</span> of <span id="total-count">0</span> tasks completed</div>
+    <div class="sync-badge">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-label">connecting</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="complete-banner" id="complete-banner">
+    All tasks complete — send that draft to your supervisor!
+  </div>
+  <div id="days"></div>
+  <div class="footnote">
+    <strong>Progress is saved in real time</strong> to Firebase Firestore.
+    Open this page on any device and your ticks will be there.
+    Collapse days you're not working on — seeing everything at once triggers task paralysis.
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://esm.sh/firebase@10/app';
+import { getFirestore, doc, onSnapshot, updateDoc, setDoc, getDoc } from 'https://esm.sh/firebase@10/firestore';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDRW8NeNgXMg1ljdryVQsxzzzI7AEgJdBc",
+  authDomain: "manuscript-checklist.firebaseapp.com",
+  projectId: "manuscript-checklist",
+  storageBucket: "manuscript-checklist.firebasestorage.app",
+  messagingSenderId: "1039184365492",
+  appId: "1:1039184365492:web:3b13905399a722272794e1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const docRef = doc(db, 'checklist', 'main');
+
+const DAYS = [
+  { id:"thu", label:"TODAY", pill:"pill-today", title:"Thursday 17 Apr — Gather & Outline", collapsed:false,
+    sections:[{ name:"prepare", tasks:[
+      { text:"Locate all Chapter 4 outputs: simulation tables, plots, R scripts", tag:"compile" },
+      { text:"Open a fresh LaTeX or Word manuscript file with journal template", tag:"format" },
+      { text:"Write out all section headings and sub-headings as a skeleton", tag:"write" },
+      { text:"List the key results you must report (3–5 main findings)", tag:"compile" },
+    ]}]},
+  { id:"fri", label:"FRI", pill:"pill-prep", title:"Friday 18 Apr — Introduction & References", collapsed:true,
+    sections:[
+      { name:"introduction", tasks:[
+        { text:"Write motivation: why circular time series + long memory matters", tag:"write" },
+        { text:"State the research gap clearly (1 paragraph)", tag:"write" },
+        { text:"List your paper's 3–4 main contributions", tag:"write" },
+        { text:"Write a brief paragraph on paper structure", tag:"write" },
+      ]},
+      { name:"references", tasks:[
+        { text:"Compile a draft reference list from Chapter 4 bibliography", tag:"compile" },
+        { text:"Add key refs: Di Marzio et al. 2012, Beran & Ghosh 2020", tag:"compile" },
+      ]}
+    ]},
+  { id:"sat", label:"SAT", pill:"pill-main", title:"Saturday 19 Apr — Methodology (heavy day)", collapsed:true,
+    sections:[
+      { name:"morning · CPRC method", tasks:[
+        { text:"Define the CPRC test statistic formally with notation", tag:"write" },
+        { text:"State assumptions and regularity conditions", tag:"write" },
+        { text:"Write asymptotic null distribution result with proof sketch", tag:"write" },
+      ]},
+      { name:"afternoon · GH-LM method", tasks:[
+        { text:"Introduce the Grabovsky–Horváth framework adapted for LRD", tag:"write" },
+        { text:"Define the long memory correction factor (role of d̂)", tag:"write" },
+        { text:"Write detection procedure step-by-step as an algorithm box", tag:"write" },
+        { text:"Add short subsection comparing CPRC vs GH-LM conceptually", tag:"write" },
+      ]},
+      { name:"evening · review", tasks:[
+        { text:"Read methodology section aloud — flag gaps or missing notation", tag:"review" },
+        { text:"Check all equations are numbered and notation is consistent", tag:"review" },
+      ]}
+    ]},
+  { id:"sun", label:"SUN", pill:"pill-main", title:"Sunday 20 Apr — Simulation & Data Application", collapsed:true,
+    sections:[
+      { name:"morning · simulation study", tasks:[
+        { text:"Write simulation design: DGP, parameter grid (n=500, d∈{0.1,0.3}, τ=250)", tag:"write" },
+        { text:"Report size and power tables from 200-replication Monte Carlo", tag:"compile" },
+        { text:"Insert plots: power curves across scenarios, method comparison", tag:"compile" },
+        { text:"Write 2–3 paragraph interpretation of simulation findings", tag:"write" },
+      ]},
+      { name:"afternoon · real data", tasks:[
+        { text:"Write data description: stations (Alor Setar, Kota Bharu, Mersing, etc.)", tag:"write" },
+        { text:"Report long memory estimates (GPH, Local Whittle) per series", tag:"compile" },
+        { text:"Apply CPRC and GH-LM to wind data, report detected changepoints", tag:"compile" },
+        { text:"Interpret detected changepoints in meteorological context", tag:"write" },
+      ]},
+      { name:"evening · conclusion & abstract", tasks:[
+        { text:"Write Discussion & Conclusion (~400 words): findings, limits, future work", tag:"write" },
+        { text:"Draft Abstract (~200 words) — write this last", tag:"write" },
+      ]}
+    ]},
+  { id:"mon", label:"MON–TUE", pill:"pill-wrap", title:"Mon 21 – Tue 22 Apr — Polish & Submit", collapsed:true,
+    sections:[{ name:"polish", tasks:[
+      { text:"Full read-through: fix flow and transitions between sections", tag:"review" },
+      { text:"Check journal formatting: title page, keywords, word count limit", tag:"format" },
+      { text:"Verify all figures have captions and tables have titles", tag:"format" },
+      { text:"Run spell-check, fix phrasing and academic tone", tag:"review" },
+      { text:"Send draft to supervisor with a short cover note", tag:"format" },
+    ]}]}
+];
+
+const collapsed = {};
+DAYS.forEach(d => collapsed[d.id] = d.collapsed);
+let taskState = {};
+
+function tid(dayId, secName, i) {
+  return `${dayId}__${secName.replace(/\W+/g,'_')}__${i}`;
+}
+
+function allTids() {
+  return DAYS.flatMap(d => d.sections.flatMap(s => s.tasks.map((_,i) => tid(d.id, s.name, i))));
+}
+
+function setSync(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + state;
+  lbl.textContent = msg;
+}
+
+function render() {
+  const all = allTids();
+  const total = all.length;
+  const done = all.filter(id => taskState[id]).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  document.getElementById('done-count').textContent = done;
+  document.getElementById('total-count').textContent = total;
+  document.getElementById('pbar').style.width = pct + '%';
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('complete-banner').classList.toggle('show', done === total && total > 0);
+
+  const container = document.getElementById('days');
+  container.innerHTML = '';
+
+  DAYS.forEach(day => {
+    const dayIds = day.sections.flatMap(s => s.tasks.map((_,i) => tid(day.id, s.name, i)));
+    const dayDone = dayIds.filter(id => taskState[id]).length;
+    const dayTotal = dayIds.length;
+    const dayPct = dayTotal ? Math.round(dayDone / dayTotal * 100) : 0;
+    const isCollapsed = collapsed[day.id];
+
+    const block = document.createElement('div');
+    block.className = 'day-block' + (isCollapsed ? ' collapsed' : '');
+
+    let sectionsHTML = '';
+    day.sections.forEach((sec, si) => {
+      if (si > 0) sectionsHTML += '<div class="day-divider"></div>';
+      sectionsHTML += `<div class="section-label">${sec.name}</div>`;
+      sec.tasks.forEach((task, ti) => {
+        const id = tid(day.id, sec.name, ti);
+        const done = !!taskState[id];
+        sectionsHTML += `
+          <div class="task-row${done?' done':''}" data-tid="${id}">
+            <div class="task-checkbox"><span class="tick">✓</span></div>
+            <div class="task-text">${task.text}</div>
+            <span class="task-tag tag-${task.tag}">${task.tag}</span>
+          </div>`;
+      });
+    });
+
+    block.innerHTML = `
+      <div class="day-header" data-dayid="${day.id}">
+        <span class="day-pill ${day.pill}">${day.label}</span>
+        <span class="day-title">${day.title}</span>
+        <div class="day-mini-bar"><div class="day-mini-fill" style="width:${dayPct}%"></div></div>
+        <span class="day-count">${dayDone}/${dayTotal}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="day-body">${sectionsHTML}</div>`;
+
+    block.querySelector('.day-header').addEventListener('click', () => {
+      collapsed[day.id] = !collapsed[day.id];
+      render();
+    });
+
+    block.querySelectorAll('.task-row').forEach(row => {
+      row.addEventListener('click', async () => {
+        const id = row.dataset.tid;
+        taskState[id] = !taskState[id];
+        render();
+        setSync('saving', 'saving…');
+        try {
+          await updateDoc(docRef, { [id]: taskState[id] });
+          setSync('ok', 'synced');
+        } catch {
+          try {
+            await setDoc(docRef, { [id]: taskState[id] }, { merge: true });
+            setSync('ok', 'synced');
+          } catch {
+            setSync('error', 'sync error');
+          }
+        }
+      });
+    });
+
+    container.appendChild(block);
+  });
+}
+
+async function init() {
+  setSync('', 'connecting…');
+  try {
+    const snap = await getDoc(docRef);
+    if (snap.exists()) taskState = snap.data();
+    render();
+    setSync('ok', 'synced');
+    onSnapshot(docRef, snap => {
+      if (snap.exists()) { taskState = snap.data(); render(); setSync('ok', 'synced'); }
+    }, () => setSync('error', 'sync error'));
+  } catch {
+    setSync('error', 'sync error — check Firestore rules');
+    render();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
