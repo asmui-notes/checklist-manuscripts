@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manuscript Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#F7F5F0;color:#1A1714;min-height:100vh;padding-bottom:3rem}
+
+.masthead{background:#1A1714;color:#F7F5F0;padding:2rem 1.5rem 1.75rem;position:relative;overflow:hidden}
+.masthead::after{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,0.07);pointer-events:none}
+.masthead-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(247,245,240,.4);margin-bottom:10px}
+.masthead h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(18px,4.5vw,28px);font-weight:400;line-height:1.25;margin-bottom:6px}
+.masthead-sub{font-size:12px;color:rgba(247,245,240,.4);font-weight:300}
+
+.prog-wrap{background:#fff;border-bottom:1px solid #E2DDD6;padding:1.25rem 1.5rem}
+.prog-row{display:flex;align-items:center;gap:12px;margin-bottom:7px}
+.prog-track{flex:1;height:7px;background:#EDE9E3;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:#1D6B4A;border-radius:4px;width:0%;transition:width .5s ease}
+.prog-pct{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#1D6B4A;min-width:36px;text-align:right}
+.prog-meta{display:flex;justify-content:space-between;align-items:center}
+.prog-count{font-size:12px;color:#7A7369}
+.sync-row{display:flex;align-items:center;gap:5px;font-size:11px;color:#7A7369;font-family:'DM Mono',monospace}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#ccc;transition:background .3s;flex-shrink:0}
+.sync-dot.ok{background:#4FA87A}
+.sync-dot.saving{background:#E8A000}
+.sync-dot.error{background:#C0392B}
+
+.main{max-width:700px;margin:0 auto;padding:1.25rem 1.5rem}
+
+.done-banner{display:none;background:#1D6B4A;color:#fff;border-radius:10px;padding:13px 16px;text-align:center;font-size:13px;margin-bottom:1rem}
+.done-banner.show{display:block}
+
+.day{background:#fff;border:1px solid #E2DDD6;border-radius:12px;margin-bottom:10px;overflow:hidden}
+.day-hdr{display:flex;align-items:center;gap:9px;padding:11px 15px;cursor:pointer;user-select:none;transition:background .15s}
+.day-hdr:hover{background:#F7F5F0}
+.day-pill{font-size:10px;font-family:'DM Mono',monospace;font-weight:500;padding:3px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.04em}
+.p-today{background:#E0F0E8;color:#1D6B4A}
+.p-fri{background:#E6EEF8;color:#2459A8}
+.p-sat,.p-sun{background:#FBEEEA;color:#A83C1D}
+.p-mon{background:#FDF3E3;color:#9A6200}
+.day-title{font-size:13px;font-weight:500;flex:1;color:#1A1714}
+.mini-bar{width:38px;height:3px;background:#EDE9E3;border-radius:2px;overflow:hidden}
+.mini-fill{height:100%;background:#4FA87A;border-radius:2px;transition:width .4s}
+.day-cnt{font-family:'DM Mono',monospace;font-size:11px;color:#7A7369;white-space:nowrap}
+.chevron{font-size:10px;color:#7A7369;transition:transform .22s;margin-left:2px}
+
+.day-body{padding:4px 15px 11px;display:flex;flex-direction:column;gap:2px}
+.sec-divider{height:1px;background:#EDE9E3;margin:8px 0 3px}
+.sec-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#7A7369;padding:6px 7px 3px}
+
+.task{display:flex;align-items:flex-start;gap:9px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background .12s}
+.task:hover{background:#F7F5F0}
+.task.done .task-txt{text-decoration:line-through;color:#7A7369}
+.task-box{width:16px;height:16px;border:1.5px solid #D0CCC6;border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .18s;background:#fff}
+.task.done .task-box{background:#1D6B4A;border-color:#1D6B4A}
+.tick{display:none;color:#fff;font-size:9px;font-weight:700;line-height:1}
+.task.done .tick{display:block}
+.task-txt{font-size:13px;color:#1A1714;line-height:1.55;flex:1;font-weight:300}
+.tag{font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:3px}
+.tag-write{background:#E0F0E8;color:#1D6B4A}
+.tag-compile{background:#E6EEF8;color:#2459A8}
+.tag-review{background:#FDF3E3;color:#9A6200}
+.tag-format{background:#F8EAF2;color:#8C2A5E}
+
+.day.closed .day-body{display:none}
+.day.closed .chevron{transform:rotate(-90deg)}
+
+.footnote{font-size:12px;color:#7A7369;background:#fff;border:1px solid #E2DDD6;border-radius:10px;padding:12px 15px;line-height:1.7;margin-top:1rem;font-weight:300}
+.footnote b{font-weight:500;color:#1A1714}
+
+@media(max-width:480px){
+  .masthead,.prog-wrap,.main{padding-left:1rem;padding-right:1rem}
+  .tag{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-eyebrow">PhD Manuscript · UiTM Malaysia</div>
+  <h1>Nonparametric Circular Time Series<br/>with Long Memory</h1>
+  <div class="masthead-sub">Target: JSCS · Communications in Statistics · Deadline 22 Apr</div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-row">
+    <div class="prog-track"><div class="prog-fill" id="pbar"></div></div>
+    <div class="prog-pct" id="pct">0%</div>
+  </div>
+  <div class="prog-meta">
+    <div class="prog-count"><span id="n-done">0</span> of <span id="n-total">0</span> tasks completed</div>
+    <div class="sync-row"><div class="sync-dot" id="sdot"></div><span id="slabel">local</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="done-banner" id="done-banner">All tasks complete — send that draft to your supervisor!</div>
+  <div id="days"></div>
+  <div class="footnote"><b>Ticks are saved locally</b> and synced to Firestore when online. Open on any device and your progress carries over.</div>
+</div>
+
+<script>
+var DAYS=[
+  {id:"thu",pill:"p-today",label:"TODAY",title:"Thursday 17 Apr — Gather & Outline",open:true,
+   sections:[{name:"prepare",tasks:[
+    {t:"Locate all Chapter 4 outputs: simulation tables, plots, R scripts",g:"compile"},
+    {t:"Open a fresh LaTeX or Word manuscript file with journal template",g:"format"},
+    {t:"Write out all section headings and sub-headings as a skeleton",g:"write"},
+    {t:"List the key results you must report (3–5 main findings)",g:"compile"}
+   ]}]},
+  {id:"fri",pill:"p-fri",label:"FRI",title:"Friday 18 Apr — Introduction & References",open:false,
+   sections:[
+    {name:"introduction",tasks:[
+     {t:"Write motivation: why circular time series + long memory matters",g:"write"},
+     {t:"State the research gap clearly (1 paragraph)",g:"write"},
+     {t:"List your paper's 3–4 main contributions",g:"write"},
+     {t:"Write a brief paragraph on paper structure",g:"write"}
+    ]},
+    {name:"references",tasks:[
+     {t:"Compile a draft reference list from Chapter 4 bibliography",g:"compile"},
+     {t:"Add key refs: Di Marzio et al. 2012, Beran & Ghosh 2020",g:"compile"}
+    ]}
+   ]},
+  {id:"sat",pill:"p-sat",label:"SAT",title:"Saturday 19 Apr — Methodology (heavy day)",open:false,
+   sections:[
+    {name:"morning · CPRC method",tasks:[
+     {t:"Define the CPRC test statistic formally with notation",g:"write"},
+     {t:"State assumptions and regularity conditions",g:"write"},
+     {t:"Write asymptotic null distribution result with proof sketch",g:"write"}
+    ]},
+    {name:"afternoon · GH-LM method",tasks:[
+     {t:"Introduce the Grabovsky-Horvath framework adapted for LRD",g:"write"},
+     {t:"Define the long memory correction factor (role of d-hat)",g:"write"},
+     {t:"Write detection procedure step-by-step as an algorithm box",g:"write"},
+     {t:"Add short subsection comparing CPRC vs GH-LM conceptually",g:"write"}
+    ]},
+    {name:"evening · review",tasks:[
+     {t:"Read methodology section aloud — flag gaps or missing notation",g:"review"},
+     {t:"Check all equations are numbered and notation is consistent",g:"review"}
+    ]}
+   ]},
+  {id:"sun",pill:"p-sun",label:"SUN",title:"Sunday 20 Apr — Simulation & Data Application",open:false,
+   sections:[
+    {name:"morning · simulation study",tasks:[
+     {t:"Write simulation design: DGP, parameter grid (n=500, d in 0.1,0.3, tau=250)",g:"write"},
+     {t:"Report size and power tables from 200-replication Monte Carlo",g:"compile"},
+     {t:"Insert plots: power curves across scenarios, method comparison",g:"compile"},
+     {t:"Write 2-3 paragraph interpretation of simulation findings",g:"write"}
+    ]},
+    {name:"afternoon · real data",tasks:[
+     {t:"Write data description: stations (Alor Setar, Kota Bharu, Mersing, etc.)",g:"write"},
+     {t:"Report long memory estimates (GPH, Local Whittle) per series",g:"compile"},
+     {t:"Apply CPRC and GH-LM to wind data, report detected changepoints",g:"compile"},
+     {t:"Interpret detected changepoints in meteorological context",g:"write"}
+    ]},
+    {name:"evening · conclusion & abstract",tasks:[
+     {t:"Write Discussion & Conclusion (~400 words): findings, limits, future work",g:"write"},
+     {t:"Draft Abstract (~200 words) — write this last",g:"write"}
+    ]}
+   ]},
+  {id:"mon",pill:"p-mon",label:"MON-TUE",title:"Mon 21 – Tue 22 Apr — Polish & Submit",open:false,
+   sections:[{name:"polish",tasks:[
+    {t:"Full read-through: fix flow and transitions between sections",g:"review"},
+    {t:"Check journal formatting: title page, keywords, word count limit",g:"format"},
+    {t:"Verify all figures have captions and tables have titles",g:"format"},
+    {t:"Run spell-check, fix phrasing and academic tone",g:"review"},
+    {t:"Send draft to supervisor with a short cover note",g:"format"}
+   ]}]}
+];
+
+// --- state ---
+var open={};
+var state={};
+DAYS.forEach(function(d){open[d.id]=d.open});
+
+function key(did,sn,i){return did+'__'+sn.replace(/\W+/g,'_')+'__'+i}
+function allKeys(){
+  var k=[];
+  DAYS.forEach(function(d){d.sections.forEach(function(s){s.tasks.forEach(function(_,i){k.push(key(d.id,s.name,i))})})});
+  return k;
+}
+
+// load from localStorage
+try{var saved=localStorage.getItem('ms_checklist');if(saved)state=JSON.parse(saved)}catch(e){}
+
+function save(){try{localStorage.setItem('ms_checklist',JSON.stringify(state))}catch(e){}}
+
+function setSync(cls,msg){
+  document.getElementById('sdot').className='sync-dot '+cls;
+  document.getElementById('slabel').textContent=msg;
+}
+
+function render(){
+  var all=allKeys(),total=all.length,done=all.filter(function(k){return state[k]}).length;
+  var pct=total?Math.round(done/total*100):0;
+  document.getElementById('n-done').textContent=done;
+  document.getElementById('n-total').textContent=total;
+  document.getElementById('pbar').style.width=pct+'%';
+  document.getElementById('pct').textContent=pct+'%';
+  document.getElementById('done-banner').className='done-banner'+(done===total&&total>0?' show':'');
+
+  var wrap=document.getElementById('days');
+  wrap.innerHTML='';
+
+  DAYS.forEach(function(day){
+    var dkeys=[];
+    day.sections.forEach(function(s){s.tasks.forEach(function(_,i){dkeys.push(key(day.id,s.name,i))})});
+    var dd=dkeys.filter(function(k){return state[k]}).length;
+    var dt=dkeys.length;
+    var dpct=dt?Math.round(dd/dt*100):0;
+
+    var el=document.createElement('div');
+    el.className='day'+(open[day.id]?'':' closed');
+
+    var body='';
+    day.sections.forEach(function(sec,si){
+      if(si>0)body+='<div class="sec-divider"></div>';
+      body+='<div class="sec-label">'+sec.name+'</div>';
+      sec.tasks.forEach(function(task,ti){
+        var k=key(day.id,sec.name,ti);
+        var done=!!state[k];
+        body+='<div class="task'+(done?' done':'')+'" data-k="'+k+'">'
+          +'<div class="task-box"><span class="tick">&#10003;</span></div>'
+          +'<div class="task-txt">'+task.t+'</div>'
+          +'<span class="tag tag-'+task.g+'">'+task.g+'</span>'
+          +'</div>';
+      });
+    });
+
+    el.innerHTML=
+      '<div class="day-hdr">'
+      +'<span class="day-pill '+day.pill+'">'+day.label+'</span>'
+      +'<span class="day-title">'+day.title+'</span>'
+      +'<div class="mini-bar"><div class="mini-fill" style="width:'+dpct+'%"></div></div>'
+      +'<span class="day-cnt">'+dd+'/'+dt+'</span>'
+      +'<span class="chevron">&#9662;</span>'
+      +'</div>'
+      +'<div class="day-body">'+body+'</div>';
+
+    el.querySelector('.day-hdr').addEventListener('click',function(){
+      open[day.id]=!open[day.id];render();
+    });
+    el.querySelectorAll('.task').forEach(function(row){
+      row.addEventListener('click',function(e){
+        e.stopPropagation();
+        var k=row.dataset.k;
+        state[k]=!state[k];
+        save();
+        render();
+        syncToFirebase(k,state[k]);
+      });
+    });
+
+    wrap.appendChild(el);
+  });
+}
+
+// --- Firebase sync (optional, loads async) ---
+var fbDoc=null;
+var fbLoaded=false;
+
+function syncToFirebase(k,val){
+  if(!fbDoc)return;
+  setSync('saving','saving...');
+  var u={};u[k]=val;
+  fbDoc.set(u,{merge:true})
+    .then(function(){setSync('ok','synced')})
+    .catch(function(){setSync('error','sync error')});
+}
+
+function loadFirebase(){
+  var s1=document.createElement('script');
+  s1.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+  s1.onload=function(){
+    var s2=document.createElement('script');
+    s2.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+    s2.onload=function(){
+      try{
+        firebase.initializeApp({
+          apiKey:"AIzaSyDRW8NeNgXMg1ljdryVQsxzzzI7AEgJdBc",
+          authDomain:"manuscript-checklist.firebaseapp.com",
+          projectId:"manuscript-checklist",
+          storageBucket:"manuscript-checklist.firebasestorage.app",
+          messagingSenderId:"1039184365492",
+          appId:"1:1039184365492:web:3b13905399a722272794e1"
+        });
+        var db=firebase.firestore();
+        fbDoc=db.collection('checklist').doc('main');
+        setSync('','connecting...');
+        fbDoc.get().then(function(snap){
+          if(snap.exists){
+            var remote=snap.data();
+            Object.assign(state,remote);
+            save();
+            render();
+          }
+          setSync('ok','synced');
+          fbDoc.onSnapshot(function(snap){
+            if(snap.exists){Object.assign(state,snap.data());save();render();setSync('ok','synced')}
+          },function(){setSync('error','sync error')});
+        }).catch(function(e){setSync('error','offline');console.warn(e)});
+      }catch(e){setSync('error','firebase error');console.warn(e)}
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+}
+
+// render immediately from localStorage, then connect Firebase
+render();
+setSync('','local only');
+loadFirebase();
+</script>
+</body>
+</html>
